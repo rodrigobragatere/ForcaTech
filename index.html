@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Forca | Cursos Tech EAD - UNISUAM</title>
+  <meta name="description" content="Jogo da forca gamificado sobre códigos maliciosos e segurança da informação." />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ====== CABEÇALHO ====== -->
+  <header class="site-header py-2">
+    <div class="container-fluid px-4">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+          <img src="img/unisuam.png" alt="UNISUAM" class="logo-unisuam" />
+          <div class="header-divider d-none d-sm-block"></div>
+          <span class="header-curso">CURSOS TECH EAD</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 gap-md-3">
+          <div id="controlesJogo" class="controles-jogo d-none">
+            <button id="btnPausar" class="btn btn-controle btn-pausar" type="button" title="Pausar jogo">
+              <i class="bi bi-pause-fill me-1"></i><span class="d-none d-sm-inline">PAUSAR</span>
+            </button>
+            <button id="btnSair" class="btn btn-controle btn-sair" type="button" title="Sair do jogo">
+              <i class="bi bi-box-arrow-left me-1"></i><span class="d-none d-sm-inline">SAIR</span>
+            </button>
+          </div>
+          <button id="btnAudio" class="btn btn-audio" type="button" title="Ligar/desligar som" aria-label="Ligar ou desligar som">
+            <i id="iconeAudio" class="bi bi-volume-up-fill"></i>
+          </button>
+          <i class="bi bi-shield-lock-fill text-success fs-4"></i>
+          <span class="header-tag d-none d-md-inline">Segurança da Informação</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== TÍTULO DO JOGO ====== -->
+  <section class="game-title-bar text-center py-3">
+    <h1 class="game-title mb-0">
+      <i class="bi bi-shield-lock-fill title-icon"></i>
+      CYBER <span class="text-green">FORCA</span>
+    </h1>
+    <p class="game-subtitle mb-0">DESAFIO DE SEGURANÇA DA INFORMAÇÃO</p>
+  </section>
+
+  <!-- ====== ÁREA DO JOGO ====== -->
+  <main class="container-fluid px-3 px-lg-4 py-3">
+    <div class="row g-3">
+
+      <!-- PAINEL ESQUERDO: PLACAR -->
+      <aside class="col-12 col-lg-2 order-2 order-lg-1">
+        <div class="panel mb-3">
+          <div class="panel-label text-info">PONTOS</div>
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-trophy-fill text-warning fs-4"></i>
+            <span id="pontos" class="stat-big text-green">0</span>
+          </div>
+        </div>
+        <div class="panel mb-3">
+          <div class="panel-label text-info">NÍVEL</div>
+          <div id="nivel" class="stat-mid text-light">Iniciante</div>
+        </div>
+        <div class="panel mb-3">
+          <div class="panel-label text-info">ERROS</div>
+          <div class="stat-mid"><span id="erros" class="text-danger">0</span><span class="text-secondary"> / 7</span></div>
+        </div>
+        <div class="panel mb-3">
+          <div class="panel-label text-info">PALAVRAS</div>
+          <div class="stat-mid"><span id="palavraAtual" class="text-violet">1</span><span class="text-secondary"> / 10</span></div>
+        </div>
+        <div class="panel mb-3">
+          <div class="panel-label text-info">MEDALHA</div>
+          <div class="text-center">
+            <i id="medalhaIcone" class="bi bi-shield-fill-check medal-icon"></i>
+            <div id="medalha" class="medal-name">Recruta Digital</div>
+          </div>
+        </div>
+        <div class="panel d-none d-lg-block hacker-panel">
+          <i class="bi bi-incognito hacker-icon"></i>
+          <div class="hacker-text">O invasor está de olho...</div>
+        </div>
+      </aside>
+
+      <!-- PAINEL CENTRAL: JOGO -->
+      <section class="col-12 col-lg-7 order-1 order-lg-2">
+
+        <!-- DICA -->
+        <div class="panel panel-dica mb-3">
+          <div class="panel-label text-warning">DICA</div>
+          <div class="d-flex align-items-center justify-content-between gap-2">
+            <p id="dica" class="dica-texto mb-0">Carregando desafio...</p>
+            <i class="bi bi-bug-fill text-success fs-3 flex-shrink-0"></i>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <!-- PALAVRA -->
+          <div class="col-12 col-md-7">
+            <div class="panel panel-palavra h-100 d-flex align-items-center justify-content-center">
+              <div id="palavra" class="palavra-container"></div>
+            </div>
+          </div>
+          <!-- DESENHO DA FORCA -->
+          <div class="col-12 col-md-5">
+            <div class="panel panel-forca h-100 d-flex align-items-center justify-content-center">
+              <svg id="forcaSvg" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg" aria-label="Desenho da forca">
+                <!-- Estrutura da forca -->
+                <line x1="20" y1="245" x2="200" y2="245" class="forca-base" />
+                <line x1="50" y1="245" x2="50" y2="20" class="forca-base" />
+                <line x1="50" y1="20" x2="140" y2="20" class="forca-base" />
+                <line x1="140" y1="20" x2="140" y2="45" class="forca-base" />
+                <!-- Partes do corpo (reveladas a cada erro) -->
+                <circle id="parte-1" cx="140" cy="70" r="25" class="parte-corpo" />
+                <line   id="parte-2" x1="140" y1="95" x2="140" y2="165" class="parte-corpo" />
+                <line   id="parte-3" x1="140" y1="115" x2="105" y2="145" class="parte-corpo" />
+                <line   id="parte-4" x1="140" y1="115" x2="175" y2="145" class="parte-corpo" />
+                <line   id="parte-5" x1="140" y1="165" x2="110" y2="215" class="parte-corpo" />
+                <line   id="parte-6" x1="140" y1="165" x2="170" y2="215" class="parte-corpo" />
+                <g id="parte-7" class="parte-corpo parte-olhos">
+                  <line x1="129" y1="62" x2="137" y2="70" />
+                  <line x1="137" y1="62" x2="129" y2="70" />
+                  <line x1="143" y1="62" x2="151" y2="70" />
+                  <line x1="151" y1="62" x2="143" y2="70" />
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- TECLADO -->
+        <div class="panel mb-3">
+          <div class="panel-label text-info">ESCOLHA UMA LETRA</div>
+          <div id="teclado" class="teclado"></div>
+        </div>
+
+        <!-- CONTROLES -->
+        <div class="row g-3 align-items-stretch">
+          <div class="col-12 col-md-3">
+            <button id="btnNovoJogo" class="btn btn-primary btn-novo w-100 h-100">
+              <i class="bi bi-arrow-repeat me-1"></i> NOVO JOGO
+            </button>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="panel h-100 py-2">
+              <div class="panel-label text-info mb-1">PROGRESSO</div>
+              <div class="progress progress-cyber">
+                <div id="barraProgresso" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-3">
+            <button id="btnDica" class="btn btn-dica w-100 h-100">
+              <i class="bi bi-lightbulb-fill text-warning me-1"></i>
+              DICAS <span id="dicasRestantes" class="badge bg-warning text-dark">3</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAINEL DIREITO: INFORMAÇÕES -->
+      <aside class="col-12 col-lg-3 order-3">
+        <div class="panel mb-3">
+          <div class="panel-label text-info text-start">PARTES DA FORCA</div>
+          <ul id="listaPartes" class="lista-partes list-unstyled mb-0">
+            <li data-parte="1"><i class="bi bi-person-circle"></i> 1. Cabeça</li>
+            <li data-parte="2"><i class="bi bi-person"></i> 2. Tronco</li>
+            <li data-parte="3"><i class="bi bi-person-arms-up"></i> 3. Braço esquerdo</li>
+            <li data-parte="4"><i class="bi bi-person-arms-up"></i> 4. Braço direito</li>
+            <li data-parte="5"><i class="bi bi-person-walking"></i> 5. Perna esquerda</li>
+            <li data-parte="6"><i class="bi bi-person-walking"></i> 6. Perna direita</li>
+            <li data-parte="7"><i class="bi bi-emoji-dizzy"></i> 7. Olhos X (fim)</li>
+          </ul>
+        </div>
+        <div class="panel panel-objetivo">
+          <div class="panel-label text-success text-start">
+            OBJETIVO <i class="bi bi-bullseye"></i>
+          </div>
+          <p class="objetivo-texto mb-0">
+            Descubra a palavra secreta relacionada à segurança da informação antes
+            que a forca seja completada! Ganha quem errar menos.
+          </p>
+          <div class="text-end mt-2"><i class="bi bi-lock-fill text-success"></i></div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ====== FAIXA DE ATENÇÃO ====== -->
+  <div class="atencao-bar text-center py-2">
+    <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+    <strong class="text-danger">ATENÇÃO:</strong>
+    <span class="atencao-texto">Cada erro aproxima o invasor. Proteja-se com conhecimento!</span>
+    <i class="bi bi-unlock-fill text-success ms-2"></i>
+  </div>
+
+  <!-- ====== RODAPÉ ====== -->
+  <footer class="site-footer py-3">
+    <div class="container text-center">
+      <img src="img/rodrigobraga.png" alt="Rodrigo Braga Tere" class="logo-rodrigo mb-2" />
+      <p class="mb-1 footer-copy">
+        &copy; <span id="anoAtual"></span> Todos os direitos reservados &mdash;
+        <strong>@rodrigoBraga</strong>
+      </p>
+      <p class="mb-0 footer-site">
+        <i class="bi bi-globe2 me-1"></i>
+        <a href="https://www.rodrigobragatere.com" target="_blank" rel="noopener">www.rodrigobragatere.com</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ====== MODAL: RESULTADO DA PALAVRA ====== -->
+  <div class="modal fade" id="modalResultado" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-cyber">
+        <div class="modal-body text-center p-4">
+          <i id="resultadoIcone" class="bi bi-shield-fill-check resultado-icone"></i>
+          <h3 id="resultadoTitulo" class="resultado-titulo mt-2"></h3>
+          <p id="resultadoPalavra" class="resultado-palavra"></p>
+          <p id="resultadoInfo" class="resultado-info"></p>
+          <button id="btnProxima" class="btn btn-primary btn-novo px-4 mt-2">
+            PRÓXIMA PALAVRA <i class="bi bi-arrow-right-circle-fill ms-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== MODAL: FIM DE JOGO ====== -->
+  <div class="modal fade" id="modalFimJogo" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content modal-cyber">
+        <div class="modal-body text-center p-4">
+          <i id="fimIcone" class="bi bi-trophy-fill resultado-icone text-warning"></i>
+          <h2 class="resultado-titulo mt-2">FIM DE JOGO!</h2>
+          <div class="row g-3 my-3">
+            <div class="col-6 col-md-3">
+              <div class="panel py-2">
+                <div class="panel-label text-info">PONTOS</div>
+                <div id="fimPontos" class="stat-mid text-green">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="panel py-2">
+                <div class="panel-label text-info">ACERTOS</div>
+                <div id="fimAcertos" class="stat-mid text-success">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="panel py-2">
+                <div class="panel-label text-info">ERROS TOTAIS</div>
+                <div id="fimErros" class="stat-mid text-danger">0</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="panel py-2">
+                <div class="panel-label text-info">MEDALHA</div>
+                <div id="fimMedalha" class="stat-mid text-warning">-</div>
+              </div>
+            </div>
+          </div>
+          <p id="fimMensagem" class="resultado-info"></p>
+          <div id="fimRecorde" class="recorde-box d-none">
+            <i class="bi bi-star-fill text-warning"></i> NOVO RECORDE!
+          </div>
+          <button id="btnJogarNovamente" class="btn btn-primary btn-novo px-4 mt-3">
+            <i class="bi bi-arrow-repeat me-1"></i> JOGAR NOVAMENTE
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== TELA DE INÍCIO (desbloqueia áudio no navegador) ====== -->
+  <div id="telaInicio" class="tela-inicio">
+    <div class="tela-inicio-wrapper">
+      <div class="tela-inicio-conteudo text-center">
+        <img src="img/unisuam.png" alt="UNISUAM" class="logo-unisuam mb-3" />
+        <h2 class="tela-inicio-titulo">CYBER <span class="text-green">FORCA</span></h2>
+        <p class="tela-inicio-sub mb-4">Desafio de Segurança da Informação</p>
+
+        <div class="mb-3 text-start">
+          <label for="nomeJogador" class="form-label label-nome">SEU NOME</label>
+          <input type="text" id="nomeJogador" class="form-control input-nome" maxlength="20" placeholder="Digite seu nome" autocomplete="nickname" />
+        </div>
+
+        <button id="btnIniciar" class="btn btn-primary btn-novo btn-iniciar px-5 py-3" type="button">
+          <i class="bi bi-play-circle-fill me-2"></i> INICIAR JOGO
+        </button>
+        <p class="tela-inicio-aviso mt-3 mb-0">
+          <i class="bi bi-volume-up-fill me-1"></i> O som será ativado ao iniciar
+        </p>
+        <p class="tela-inicio-aviso mt-2 mb-0">
+          <i class="bi bi-controller me-1"></i> Suporte a joystick: direcional navega · A confirma · Start pausa
+        </p>
+        <p id="statusGamepad" class="status-gamepad mt-2 mb-0 d-none">
+          <i class="bi bi-controller text-success"></i> <span id="nomeGamepad">Joystick</span> conectado
+        </p>
+      </div>
+
+      <div class="panel panel-ranking">
+        <div class="panel-label text-warning">
+          <i class="bi bi-trophy-fill me-1"></i> TOP 5 RANKING
+        </div>
+        <p id="dataRankingAtual" class="ranking-data-atual mb-2"></p>
+        <p class="ranking-regra">Ganha quem errar menos. Em empate, vence quem tiver mais pontos.</p>
+        <ol id="listaRanking" class="lista-ranking list-unstyled mb-0"></ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== OVERLAY: PAUSA ====== -->
+  <div id="overlayPausa" class="overlay-pausa d-none">
+    <div class="overlay-pausa-conteudo text-center">
+      <i class="bi bi-pause-circle-fill overlay-pausa-icone"></i>
+      <h3 class="overlay-pausa-titulo">JOGO PAUSADO</h3>
+      <p class="overlay-pausa-texto mb-4">O desafio está em espera. Retome quando quiser.</p>
+      <button id="btnContinuar" class="btn btn-primary btn-novo px-4 py-2" type="button">
+        <i class="bi bi-play-fill me-1"></i> CONTINUAR
+      </button>
+    </div>
+  </div>
+
+  <audio id="audioUnisuam" src="audio/Unisuam.mp3" loop preload="auto"></audio>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
